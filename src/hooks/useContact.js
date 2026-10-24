@@ -28,7 +28,7 @@ function validate({ firstName, lastName, email, subject, message }) {
 
 /**
  * Contact form submission state. `send` returns true only when the message
- * actually reached Firestore, so the caller can navigate to /thank-you on
+ * was actually delivered (emailed or saved), so the caller can navigate to /thank-you on
  * success and keep the user on the form (with an error) on failure.
  */
 export default function useContact() {
@@ -47,12 +47,8 @@ export default function useContact() {
     try {
       await addContactMessage(form)
       return true
-    } catch (err) {
-      setError(
-        err?.code === 'permission-denied'
-          ? "We couldn't send your message right now. Please email us at uhsfbla2@gmail.com."
-          : 'Something went wrong sending your message. Please try again.',
-      )
+    } catch {
+      setError("We couldn't send your message right now. Please try again, or email us at uhsfbla2@gmail.com.")
       return false
     } finally {
       setSending(false)
